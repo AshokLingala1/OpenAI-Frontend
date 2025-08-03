@@ -82,20 +82,21 @@ const ChatBox = () => {
   };
 
   return (
-    <div className={`${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-200 text-gray-900'} h-screen flex flex-col`}>
+    <div className={`${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}
+  flex flex-col w-full max-w-full min-h-[calc(100vh-4rem)] sm:max-w-2xl mx-auto`}>
       
       {/* Header */}
-      <div className="flex justify-between items-center p-4 shadow-md">
-        <h1 className="text-xl font-bold">Ashok's AI Chat</h1>
-        <button onClick={handleThemeToggle} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+      <div className="flex justify-between items-center p-4 sm:p-5 shadow-md">
+        <h1 className="text-lg sm:text-xl font-bold">Ashok's AI Chat</h1>
+        <button onClick={handleThemeToggle} className="text-sm sm:text-base px-3 py-1 sm:px-4 sm:py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
           {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
         </button>
       </div>
 
       {/* Chat Window */}
-      <div ref={chatRef} className="flex-1 overflow-y-auto px-4 py-2 space-y-3">
+      <div ref={chatRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-3">
         {showGreet && (
-          <div className="text-center text-gray-500 mt-8">👋 Hi there! Ask me anything to get started.</div>
+          <div className="text-center text-sm text-gray-500 mt-4">👋 Hi there! Ask me anything to get started.</div>
         )}
 
         {messages.map((message, index) => (
@@ -106,7 +107,9 @@ const ChatBox = () => {
     } mb-2`}
   >
     <div
-      className={`max-w-xs md:max-w-md lg:max-w-2xl break-words p-3 rounded-2xl shadow-md ${
+      className={`max-w-[85%] sm:max-w-md md:max-w-2xl
+            p-3 rounded-2xl shadow-md
+            break-words ${
         message.from === 'user'
           ? 'bg-blue-500 text-white rounded-br-none'
           : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none'
@@ -117,7 +120,7 @@ const ChatBox = () => {
         <img
           src={message.image}
           alt="User uploaded"
-          className="max-w-full max-h-80 rounded-lg mb-2"
+          className="w-full max-h-72 object-cover mb-2 rounded-md"
         />
       )}
 
@@ -126,10 +129,10 @@ const ChatBox = () => {
         <img
           src={message.text}
           alt="AI response"
-          className="max-w-full max-h-80 rounded-lg"
+          className="w-full max-h-72 object-cover rounded-md"
         />
       ) : (
-        <p className="whitespace-pre-wrap">{message.text}</p>
+        <p className="whitespace-pre-wrap text-sm sm:text-base">{message.text}</p>
       )}
     </div>
   </div>
@@ -138,10 +141,10 @@ const ChatBox = () => {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 flex items-center gap-2 border-t border-gray-700">
+      <div className="p-2 sm:p-4 flex flex-col sm:flex-row items-center gap-2 border-t border-gray-700">
         <input
           type="text"
-          className="flex-1 p-2 pr-7 border rounded-md outline-none  bg-gray-400"
+          className="flex-1 p-2 text-sm sm:text-base border rounded-md outline-none bg-gray-200 dark:bg-gray-500"
           placeholder="Type your message..."
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -151,11 +154,11 @@ const ChatBox = () => {
           type="file"
           accept="image/jpeg"
           onChange={handleFileChange}
-          className="text-sm border-1 py-2.5 rounded-tl-2xl rounded-br-2xl"
+          className="text-xs sm:text-sm py-2 px-1"
         />
         <button
           onClick={sendMessage}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          className="w-full sm:w-auto bg-green-500 text-white px-3 py-2 text-sm sm:text-base rounded hover:bg-green-600"
         >
           Send
         </button>

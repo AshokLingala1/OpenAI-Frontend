@@ -40,7 +40,7 @@ const ChatBox = () => {
 
       // Send to /info/{prompt}
       response = await axios.post(
-        `http://localhost:2002/info/${encodeURIComponent(input || 'Describe this image')}`,
+        `https://springbootopenai.onrender.com/info/${encodeURIComponent(input || 'Describe this image')}`,
         formData,
         {
           headers: {
@@ -50,7 +50,7 @@ const ChatBox = () => {
       );
     } else {
       // Fallback for text-only prompts
-      response = await axios.get(`http://localhost:2002/api/${encodeURIComponent(input)}`);
+      response = await axios.get(`https://springbootopenai.onrender.com/api/${encodeURIComponent(input)}`);
     }
 
     const aiMessage = {

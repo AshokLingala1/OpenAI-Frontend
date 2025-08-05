@@ -17,6 +17,13 @@ const ChatBox = () => {
     }
   }, [messages]);
 
+  const isValidImageUrl = (url) => {
+    return typeof url === 'string' && (
+      url.match(/\.(jpeg|jpg|png|gif|webp)$/i) ||
+      url.includes('oaidalleapiprodscus.blob.core.windows.net') // add other domains if needed
+    );
+  };
+
   const handleSend = async () => {
   if (!input.trim()) return;
 
@@ -24,6 +31,7 @@ const ChatBox = () => {
   setMessages(newMessages);
   setInput(""); // Clear input field
   setIsTyping(true); // ✅ Show typing animation
+  setFile('');
 
   try {
     const response = await axios.post(`http://localhost:8080/ask`, {
@@ -65,6 +73,8 @@ const ChatBox = () => {
   setInput('');
   setShowGreet(false);
   setIsTyping(true); // 👉 Start typing animation
+
+  
 
   try {
     let response;
@@ -149,14 +159,24 @@ const ChatBox = () => {
           : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none"
       } shadow-md`}
     >
-      {msg.image && (
-    <img
-      src={msg.image}
-      alt="Uploaded"
-      className="max-w-xs max-h-60 rounded mb-2"
-    />
-  )}
+  {msg.image && (
+  <img
+    src={msg.image}
+    alt="Uploaded"
+    className="max-w-xs max-h-60 rounded mb-2"
+  />
+)}
+
+{isValidImageUrl(msg.text) ? (
+  <img
+    src={msg.text}
+    alt="AI generated"
+    className="max-w-xs max-h-60 rounded mb-2"
+  />
+) : (
   <p className="whitespace-pre-wrap">{msg.text}</p>
+)}
+
     </div>
   </div>
 ))}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { TypingDots } from './TypingDots';
 
 const ChatBox = () => {
   const [input, setInput] = useState('');
@@ -8,12 +9,45 @@ const ChatBox = () => {
   const [theme, setTheme] = useState('light');
   const [file, setFile] = useState(null);
   const chatRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [messages]);
+
+  const handleSend = async () => {
+  if (!input.trim()) return;
+
+  const newMessages = [...messages, { from: "user", text: input }];
+  setMessages(newMessages);
+  setInput(""); // Clear input field
+  setIsTyping(true); // ✅ Show typing animation
+
+  try {
+    const response = await axios.post(`http://localhost:8080/ask`, {
+      message: input,
+    });
+
+    // simulate delay if needed (optional)
+    // await new Promise(resolve => setTimeout(resolve, 1000));
+
+    setMessages([
+      ...newMessages,
+      { from: "bot", text: response.data }, // 👈 Add bot response
+    ]);
+  } catch (err) {
+    console.error(err);
+    setMessages([
+      ...newMessages,
+      { from: "bot", text: "Error: Failed to get response." },
+    ]);
+  } finally {
+    setIsTyping(false); // ✅ Hide typing animation
+  }
+};
+
 
   const handleThemeToggle = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
@@ -30,6 +64,7 @@ const ChatBox = () => {
   setMessages(prev => [...prev, userMessage]);
   setInput('');
   setShowGreet(false);
+  setIsTyping(true); // 👉 Start typing animation
 
   try {
     let response;
@@ -38,7 +73,6 @@ const ChatBox = () => {
       const formData = new FormData();
       formData.append('file', file);
 
-      // Send to /info/{prompt}
       response = await axios.post(
         `https://springbootopenai.onrender.com/info/${encodeURIComponent(input || 'Describe this image')}`,
         formData,
@@ -49,8 +83,9 @@ const ChatBox = () => {
         }
       );
     } else {
-      // Fallback for text-only prompts
-      response = await axios.get(`https://springbootopenai.onrender.com/api/${encodeURIComponent(input)}`);
+      response = await axios.get(
+        `https://springbootopenai.onrender.com/api/${encodeURIComponent(input)}`
+      );
     }
 
     const aiMessage = {
@@ -58,15 +93,18 @@ const ChatBox = () => {
       text: response.data,
     };
     setMessages(prev => [...prev, aiMessage]);
-    setFile(null); // Reset file
+    setFile(null);
   } catch (err) {
     console.error(err);
     setMessages(prev => [
       ...prev,
       { from: 'bot', text: 'Something went wrong. Please try again.' },
     ]);
+  } finally {
+    setIsTyping(false); // 👉 Stop typing animation
   }
 };
+
 
   const handleFileChange = e => {
     const selectedFile = e.target.files[0];
@@ -99,44 +137,32 @@ const ChatBox = () => {
           <div className="text-center text-sm text-gray-500 mt-4">👋 Hi there! Ask me anything to get started.</div>
         )}
 
-        {messages.map((message, index) => (
+        {messages.map((msg, index) => (
   <div
     key={index}
-    className={`flex ${
-      message.from === 'user' ? 'justify-end' : 'justify-start'
-    } mb-2`}
+    className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"} mb-2`}
   >
     <div
-      className={`max-w-[85%] sm:max-w-md md:max-w-2xl
-            p-3 rounded-2xl shadow-md
-            break-words ${
-        message.from === 'user'
-          ? 'bg-blue-500 text-white rounded-br-none'
-          : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none'
-      }`}
+      className={`max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl ${
+        msg.from === "user"
+          ? "bg-blue-500 text-white rounded-br-none"
+          : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none"
+      } shadow-md`}
     >
-      {/* Show uploaded image if it's from user and has image property */}
-      {message.from === 'user' && message.image && (
-        <img
-          src={message.image}
-          alt="User uploaded"
-          className="w-full max-h-72 object-cover mb-2 rounded-md"
-        />
-      )}
-
-      {/* Show AI image response or text */}
-      {message.text.startsWith('http') ? (
-        <img
-          src={message.text}
-          alt="AI response"
-          className="w-full max-h-72 object-cover rounded-md"
-        />
-      ) : (
-        <p className="whitespace-pre-wrap text-sm sm:text-base">{message.text}</p>
-      )}
+      {msg.text}
     </div>
   </div>
 ))}
+
+{/* 👇 Typing indicator */}
+{isTyping && (
+  <div className="flex justify-start mb-2">
+    <div className="max-w-xs md:max-w-md lg:max-w-2xl p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-md">
+      <TypingDots />
+    </div>
+  </div>
+)}
+
 
       </div>
 

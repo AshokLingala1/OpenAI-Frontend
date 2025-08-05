@@ -149,7 +149,14 @@ const ChatBox = () => {
           : "bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none"
       } shadow-md`}
     >
-      {msg.text}
+      {msg.image && (
+    <img
+      src={msg.image}
+      alt="Uploaded"
+      className="max-w-xs max-h-60 rounded mb-2"
+    />
+  )}
+  <p className="whitespace-pre-wrap">{msg.text}</p>
     </div>
   </div>
 ))}

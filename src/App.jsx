@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 
 export default function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
 
   return (
     <div className={
